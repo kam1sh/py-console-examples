@@ -10,7 +10,7 @@ from todolib import TodoApp, Task
 @pytest.fixture
 def app():
     out = TodoApp()
-    out.db = {"tasks": [], "seq": 0}
+    out.db = {"tasks": []}
     return out
 
 

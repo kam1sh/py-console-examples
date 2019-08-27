@@ -3,20 +3,23 @@ import logging
 import sys
 import traceback
 
-from todolib import Task, TodoApp
+from todolib import Task, TodoApp, AppException
 
 log = logging.getLogger(__name__)
 
 
 def get_parser():
     parser = argparse.ArgumentParser("Todo notes")
+    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose mode")
     subparsers = parser.add_subparsers(title="Commands", dest="cmd")
 
     add = subparsers.add_parser("add", help="Add new task")
     add.add_argument("title", help="Todo title")
 
     show = subparsers.add_parser("show", help="Show tasks")
-    show.add_argument("--show-done", action="store_true", help="Include done tasks in the output")
+    show.add_argument(
+        "--show-done", action="store_true", help="Include done tasks in the output"
+    )
 
     done = subparsers.add_parser("done", help="Mark task as done")
     done.add_argument("number", type=int, help="Task number")
@@ -29,6 +32,7 @@ def get_parser():
 
 class Commands:
     """ Collection of todo CLI commands. """
+
     def __init__(self, app: TodoApp, args: argparse.Namespace):
         self.app = app
         self.args = args
@@ -57,10 +61,14 @@ class Commands:
         task = self.app.get_task(self.args.number)
         task.remove()
 
+
 def main(raw_args=None):
     """ Argparse example entrypoint """
     parser = get_parser()
     args = parser.parse_args(raw_args)
+    logging.basicConfig()
+    if args.verbose:
+        logging.getLogger("todolib").setLevel(logging.INFO)
 
     if not args.cmd or not hasattr(Commands, args.cmd):
         parser.print_help()
@@ -70,6 +78,9 @@ def main(raw_args=None):
         cmds = Commands(app, args)
         # execute handler
         getattr(cmds, args.cmd)()
+    except AppException as e:  # pylint:disable=invalid-name
+        print("Error:", e)
+        sys.exit(2)
     except:  # pylint:disable=bare-except
         traceback.print_exc()
         sys.exit(2)

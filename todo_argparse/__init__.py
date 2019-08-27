@@ -28,6 +28,7 @@ def get_parser():
 
 
 class Commands:
+    """ Collection of todo CLI commands. """
     def __init__(self, app: TodoApp, args: argparse.Namespace):
         self.app = app
         self.args = args
@@ -46,7 +47,6 @@ class Commands:
         for task in tasks:
             status_char = "✔" if task.done else "✘"
             print(f"{task.number}\t{task.title}\t{status_char}")
-        # for task in self
 
     def done(self):
         task = self.app.get_task(self.args.number)
@@ -58,6 +58,7 @@ class Commands:
         task.remove()
 
 def main(raw_args=None):
+    """ Argparse example entrypoint """
     parser = get_parser()
     args = parser.parse_args(raw_args)
 

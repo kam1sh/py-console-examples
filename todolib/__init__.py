@@ -44,6 +44,33 @@ class TodoApp:
         log.debug("Task raw: %s", raw)
         return Task(app=self, number=number, **raw)
 
+    def add_task(self, title) -> "Task":
+        task = Task(self, title)
+        task.save()
+        return task
+
+    def print_tasks(self, show_done):
+        tasks = self.list_tasks(show_done=show_done)
+        if not tasks:
+            print("There is no TODOs.")
+            return
+        print("Number\tTitle\tStatus")
+        for task in tasks:
+            status_char = "✔" if task.done else "✘"
+            print(f"{task.number}\t{task.title}\t{status_char}")
+
+
+    def task_done(self, number) -> "Task":
+        task = self.get_task(number)
+        task.done = True
+        task.save()
+        return task
+
+    def remove_task(self, number) -> "Task":
+        task = self.get_task(number)
+        task.remove()
+        return task
+
     def save(self):
         """ Saves database. """
         if not self.file:

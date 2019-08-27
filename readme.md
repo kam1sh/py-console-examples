@@ -15,3 +15,10 @@ Python 3.7 required.
 ```bash
 python3 setup.py install
 ```
+
+## Usage
+```bash
+python3 -m todo_argparse
+python3 -m todo_docopt
+# etc
+```

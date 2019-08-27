@@ -3,14 +3,17 @@ import logging
 import sys
 import traceback
 
-from todolib import Task, TodoApp, AppException
+from todolib import Task, TodoApp, AppException, __version__ as lib_version
 
 log = logging.getLogger(__name__)
 
 
 def get_parser():
     parser = argparse.ArgumentParser("Todo notes")
-    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose mode")
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Enable verbose mode"
+    )
+    parser.add_argument("--version", "-V", action="store_true", help="Show version")
     subparsers = parser.add_subparsers(title="Commands", dest="cmd")
 
     add = subparsers.add_parser("add", help="Add new task")
@@ -30,54 +33,34 @@ def get_parser():
     return parser
 
 
-class Commands:
-    """ Collection of todo CLI commands. """
-
-    def __init__(self, app: TodoApp, args: argparse.Namespace):
-        self.app = app
-        self.args = args
-
-    def add(self):
-        task = Task(self.app, self.args.title)
-        task.save()
-        print(f"Task {task.title!r} created with number {task.number}.")
-
-    def show(self):
-        tasks = self.app.list_tasks(show_done=self.args.show_done)
-        if not tasks:
-            print("There is no TODOs.")
-            return
-        print("Number\tTitle\tStatus")
-        for task in tasks:
-            status_char = "✔" if task.done else "✘"
-            print(f"{task.number}\t{task.title}\t{status_char}")
-
-    def done(self):
-        task = self.app.get_task(self.args.number)
-        task.done = True
-        task.save()
-
-    def remove(self):
-        task = self.app.get_task(self.args.number)
-        task.remove()
-
-
 def main(raw_args=None):
     """ Argparse example entrypoint """
     parser = get_parser()
     args = parser.parse_args(raw_args)
     logging.basicConfig()
+
     if args.verbose:
         logging.getLogger("todolib").setLevel(logging.INFO)
-
-    if not args.cmd or not hasattr(Commands, args.cmd):
+    if args.version:
+        print(lib_version)
+        sys.exit(0)
+    cmd = args.cmd
+    if not cmd:
         parser.print_help()
         sys.exit(1)
+    app = TodoApp.fromenv()
     try:
-        app = TodoApp.fromenv()
-        cmds = Commands(app, args)
-        # execute handler
-        getattr(cmds, args.cmd)()
+        if cmd == "add":
+            task = app.add_task(args.title)
+            print(f"Task {task.title!r} created with number {task.number}.")
+        elif cmd == "show":
+            app.print_tasks(args.show_done)
+        elif cmd == "done":
+            task = app.task_done(args.number)
+            print(f"Task {task.title!r} marked as done.")
+        elif cmd == "remove":
+            task = app.remove_task(args.number)
+            print(f"Task {task.title!r} removed from list.")
     except AppException as e:  # pylint:disable=invalid-name
         print("Error:", e)
         sys.exit(2)

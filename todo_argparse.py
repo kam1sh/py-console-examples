@@ -3,13 +3,11 @@ import logging
 import sys
 import traceback
 
-from todolib import Task, TodoApp, AppException, __version__ as lib_version
-
-log = logging.getLogger(__name__)
+from todolib import TodoApp, AppError, __version__ as lib_version
 
 
 def get_parser():
-    parser = argparse.ArgumentParser("Todo notes")
+    parser = argparse.ArgumentParser("Todo notes - argparse version")
     parser.add_argument(
         "--verbose", "-v", action="store_true", help="Enable verbose mode"
     )
@@ -48,24 +46,26 @@ def main(raw_args=None):
     if not cmd:
         parser.print_help()
         sys.exit(1)
-    app = TodoApp.fromenv()
-    try:
-        if cmd == "add":
-            task = app.add_task(args.title)
-            print(f"Task {task.title!r} created with number {task.number}.")
-        elif cmd == "show":
-            app.print_tasks(args.show_done)
-        elif cmd == "done":
-            task = app.task_done(args.number)
-            print(f"Task {task.title!r} marked as done.")
-        elif cmd == "remove":
-            task = app.remove_task(args.number)
-            print(f"Task {task.title!r} removed from list.")
-    except AppException as e:  # pylint:disable=invalid-name
-        print("Error:", e)
-        sys.exit(2)
-    except:  # pylint:disable=bare-except
-        traceback.print_exc()
-        sys.exit(2)
-    finally:
-        app.save()
+    with TodoApp.fromenv() as app:
+        try:
+            if cmd == "add":
+                task = app.add_task(args.title)
+                print(f"Task {task.title!r} created with number {task.number}.")
+            elif cmd == "show":
+                app.print_tasks(args.show_done)
+            elif cmd == "done":
+                task = app.task_done(args.number)
+                print(f"Task {task.title!r} marked as done.")
+            elif cmd == "remove":
+                task = app.remove_task(args.number)
+                print(f"Task {task.title!r} removed from list.")
+        except AppError as e:  # pylint:disable=invalid-name
+            print("Error:", e)
+            sys.exit(2)
+        except:  # pylint:disable=bare-except
+            traceback.print_exc()
+            sys.exit(2)
+
+
+if __name__ == "__main__":
+    main()

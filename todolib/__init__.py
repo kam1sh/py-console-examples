@@ -21,12 +21,16 @@ class TodoApp:
                 "manually via attribute 'db'."
             )
             return
-        if not file.exists():
-            file.write_text(json.dumps({"tasks": []}))
-        with file.open() as fp:
-            self.db = json.load(fp=fp)
+        self.db = self.get_db()
 
-    def list_tasks(self, show_done=False) -> ty.Iterable["Task"]:
+    def get_db(self):
+        if not self.file.exists():
+            return {"tasks": []}
+        else:
+            with self.file.open() as fp:
+                return json.load(fp=fp)
+
+    def list_tasks(self, show_done=False) -> ty.List["Task"]:
         """ Shows existing tasks. """
         out = [
             Task(app=self, number=i, **t)
@@ -40,7 +44,7 @@ class TodoApp:
         try:
             raw = self.db["tasks"][number]
         except IndexError:
-            raise AppException("No such task.") from None
+            raise AppError("No such task.") from None
         log.debug("Task raw: %s", raw)
         return Task(app=self, number=number, **raw)
 
@@ -78,15 +82,16 @@ class TodoApp:
             return
         log.info("Saving database to a file %s", self.file)
         with self.file.open("w") as fd:
+            log.debug("Database contents: %s", self.db)
             json.dump(self.db, fd)
 
     @classmethod
-    def fromenv(cls):
+    def fromenv(cls, value=None):
         """
         Creates application with database
         from the environment variable 'TODO_DB'.
         """
-        file = os.getenv("TODO_DB")
+        file = value or os.getenv("TODO_DB")
         log.debug("TODO_DB value: %s", file)
         if not file:
             folder = Path.home() / ".local" / "share" / "todoapp"
@@ -96,6 +101,12 @@ class TodoApp:
             file = Path(file)
         log.info("Using database file %s", file)
         return cls(file=file)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        self.save()
 
 
 @dataclasses.dataclass
@@ -135,5 +146,5 @@ class Task:
         """ Removes task from the database. """
         del self.app.db["tasks"][self.number]
 
-class AppException(Exception):
+class AppError(Exception):
     pass

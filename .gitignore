@@ -27,14 +27,7 @@ pip-log.txt
 
 *.log
 
-/setup.cfg
-MANIFEST.in
-/setup.py
-/docs/site/*
-/tests/fixtures/simple_project/setup.py
-/tests/fixtures/project_with_extras/setup.py
 .mypy_cache
 
 .venv
-/releases/*
 pip-wheel-metadata

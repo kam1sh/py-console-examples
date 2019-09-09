@@ -1,7 +1,9 @@
+import cleo
 import click.testing
 import pytest
 
 import todo_argparse
+import todo_cleo
 import todo_click
 import todo_docopt
 import todo_fire
@@ -52,3 +54,12 @@ def test_fire(capsys):
     todo_fire.main(["add", "test"])
     out, _ = capsys.readouterr()
     assert out == EXPECTED
+
+
+def test_cleo():
+    app = todo_cleo.TodoApp()
+    command = app.find("add")
+    tester = cleo.CommandTester(command)
+    tester.execute("test")
+    assert tester.status_code == 0
+    assert tester.io.fetch_output() == "Task test created with number 0.\n"

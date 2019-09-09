@@ -2,7 +2,6 @@
 import atexit
 
 from cleo import Application as BaseApplication, Command as BaseCommand
-
 # cleo is a wrapper around clikit, and sometimes you have to access low-level library
 from clikit.api.io import flags as verbosity
 
@@ -77,7 +76,7 @@ class RemoveCommand(Command):
 
 class TodoApp(BaseApplication):
     def __init__(self):
-        super().__init__(name="TODO app", version=todolib.__version__)
+        super().__init__(name="ToDo app - cleo version", version=todolib.__version__)
         self.add_commands(AddCommand(), ShowCommand(), DoneCommand(), RemoveCommand())
         self.todoapp = todolib.TodoApp.fromenv()
         atexit.register(self.todoapp.save)

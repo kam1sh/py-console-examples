@@ -2,12 +2,12 @@
 """Todo notes - docopt version.
 
 Usage:
-  todonotes [-v | -vv ] add <task>
-  todonotes [-v | -vv ] show --show-done
-  todonotes [-v | -vv ] done <number>
-  todonotes [-v | -vv ] remove <number>
-  todonotes -h | --help
-  todonotes --version
+  todo_docopt [-v | -vv ] add <task>
+  todo_docopt [-v | -vv ] show --show-done
+  todo_docopt [-v | -vv ] done <number>
+  todo_docopt [-v | -vv ] remove <number>
+  todo_docopt -h | --help
+  todo_docopt --version
 
 Options:
   -h --help     Show help.

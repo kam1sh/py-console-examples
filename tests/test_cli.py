@@ -3,6 +3,7 @@ import click.testing
 import pytest
 
 import todo_argparse
+import todo_cement
 import todo_cleo
 import todo_click
 import todo_docopt
@@ -13,8 +14,8 @@ import todolib
 @pytest.fixture(autouse=True)
 def db(monkeypatch):
     """
-    monkeypatch получения базы данных из файла,
-    чтобы перед тестами всегда была пустая база.
+    monkeypatch database load, so there would be empty database
+    before each test
     """
     value = {"tasks": []}
     monkeypatch.setattr(todolib.TodoApp, "get_db", lambda _: value)
@@ -23,7 +24,7 @@ def db(monkeypatch):
 
 @pytest.yield_fixture(autouse=True)
 def check(db):
-    """ Функция для проверки содержимого БД. """
+    """ fixture for asserting database contents """
     yield
     assert db["tasks"] and db["tasks"][0]["title"] == "test"
 
@@ -54,6 +55,20 @@ def test_fire(capsys):
     todo_fire.main(["add", "test"])
     out, _ = capsys.readouterr()
     assert out == EXPECTED
+
+
+class TestCementApp(todo_cement.TodoApp):
+    class Meta:
+        label = "todoapp"
+
+
+def test_cement(capsys):
+    with TestCementApp(argv=["add", "test"]) as app:
+        app.run()
+        out, _ = capsys.readouterr()
+        assert out == EXPECTED
+        # for asserting jinja output, not used in this application
+        assert app.last_rendered is None
 
 
 def test_cleo():

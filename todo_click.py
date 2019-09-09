@@ -35,7 +35,7 @@ def add(app, task):
 
 
 @cli.command()
-@click.option("--show-done", is_flag=True)
+@click.option("--show-done", is_flag=True, help="Include done tasks")
 @pass_app
 def show(app, show_done):
     """ Show current tasks. """

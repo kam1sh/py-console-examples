@@ -63,7 +63,6 @@ class TodoApp:
             status_char = "✔" if task.done else "✘"
             print(f"{task.number}\t{task.title}\t{status_char}")
 
-
     def task_done(self, number) -> "Task":
         task = self.get_task(number)
         task.done = True
@@ -145,6 +144,10 @@ class Task:
     def remove(self):
         """ Removes task from the database. """
         del self.app.db["tasks"][self.number]
+
+    def __str__(self):
+        return f"Task '{self.title}'"
+
 
 class AppError(Exception):
     pass

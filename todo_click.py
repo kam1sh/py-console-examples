@@ -1,77 +1,70 @@
+import atexit
 import logging
-import sys
-import traceback
 
 import click
-from todolib import Task, TodoApp, AppError, __version__ as lib_version
+
+from todolib import TodoApp, __version__ as lib_version
 
 levels = [logging.WARN, logging.INFO, logging.DEBUG]
+
+pass_app = click.make_pass_decorator(TodoApp)
 
 
 @click.group()
 @click.version_option(lib_version, prog_name="todo_click")
 @click.option("-v", "--verbose", count=True)
-def cli(verbose):
+@click.option("--db", help="Path to the database file")
+@click.pass_context
+def cli(ctx, verbose, db):
     """Todo notes - click version."""
     logging.basicConfig()
-    logging.getLogger("todolib").setLevel(
-        logging.DEBUG if verbose > 2 else levels[verbose]
-    )
+    level = levels[min(verbose, 2)]
+    logging.getLogger("todolib").setLevel(level)
+    ctx.obj = TodoApp.fromenv(db)
+    atexit.register(ctx.obj.save)
 
 
 @cli.command()
 @click.argument("task")
-def add(task):
+@pass_app
+def add(app, task):
     """ Add new task. """
-    with TodoApp.fromenv() as app:
-        task = app.add_task(task)
-    click.echo(f"Task {task.title!r} created with number {task.number}.")
+    task = app.add_task(task)
+    click.echo(f"{task} created with number {task.number}.")
 
 
 @cli.command()
 @click.option("--show-done", is_flag=True)
-def show(show_done):
+@pass_app
+def show(app, show_done):
     """ Show current tasks. """
-    with TodoApp.fromenv() as app:
-        app.print_tasks(show_done)
+    app.print_tasks(show_done)
 
 
 @cli.command()
 @click.argument("number", type=int)
-def done(number):
+@pass_app
+def done(app, number):
     """ Mark task as done. """
-    with TodoApp.fromenv() as app:
-        task = app.task_done(number)
-    click.echo(f"Task {task.title!r} marked as done.")
+    task = app.task_done(number)
+    click.echo(f"{task} marked as done.")
 
 
 @cli.command()
 @click.argument("number", type=int)
-def remove(number):
+@pass_app
+def remove(app, number):
     """ Removes task from the list. """
-    with TodoApp.fromenv() as app:
-        task = app.remove_task(number)
-    click.echo(f"Task {task.title!r} removed from list.")
-
-
-def abort_if_false(ctx, param, value):
-    if not value:
-        ctx.abort()
+    task = app.remove_task(number)
+    click.echo(f"{task} removed from list.")
 
 
 @cli.command()
-@click.option("--db")
-@click.option(
-    "--yes",
-    is_flag=True,
-    callback=abort_if_false,
-    expose_value=False,
-    prompt="Are you sure you want to drop the db?",
-)
-def wipe(db):
-    with TodoApp.fromenv(db) as app:
-        for task in app.list_tasks():
-            task.remove()
+@click.confirmation_option(prompt="Are you sure you want to remove database")
+@pass_app
+def wipe(app):
+    for task in app.list_tasks():
+        task.remove()
 
 
 if __name__ == "__main__":

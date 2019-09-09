@@ -17,11 +17,13 @@ import sys
 import traceback
 
 from docopt import docopt
-from todolib import Task, TodoApp, AppError, __version__ as lib_version
+
+from todolib import TodoApp, AppError, __version__ as lib_version
 
 log = logging.getLogger("todolib")
 
 levels = [logging.WARNING, logging.INFO, logging.DEBUG]
+
 
 def main(argv=None):
     args = docopt(__doc__, argv=argv, version=lib_version)
@@ -33,15 +35,15 @@ def main(argv=None):
         try:
             if args["add"]:
                 task = app.add_task(args["<task>"])
-                print(f"Task {task.title!r} created with number {task.number}.")
+                print(task, "created with number", task.number, end=".\n")
             elif args["show"]:
                 app.print_tasks(args["--show-done"])
             elif args["done"]:
                 task = app.task_done(args["<number>"])
-                print(f"Task {task.title!r} marked as done.")
+                print(task, "marked as done.")
             elif args["remove"]:
                 task = app.remove_task(args["<number>"])
-                print(f"Task {task.title!r} removed from list.")
+                print(task, "removed from list.")
         except AppError as e:  # pylint:disable=invalid-name
             print("Error:", e)
             sys.exit(2)

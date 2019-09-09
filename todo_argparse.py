@@ -50,15 +50,15 @@ def main(raw_args=None):
         try:
             if cmd == "add":
                 task = app.add_task(args.title)
-                print(f"Task {task.title!r} created with number {task.number}.")
+                print(task, "created with number", task.number, end=".\n")
             elif cmd == "show":
                 app.print_tasks(args.show_done)
             elif cmd == "done":
                 task = app.task_done(args.number)
-                print(f"Task {task.title!r} marked as done.")
+                print(task, "marked as done.")
             elif cmd == "remove":
                 task = app.remove_task(args.number)
-                print(f"Task {task.title!r} removed from list.")
+                print(task, "removed from list.")
         except AppError as e:  # pylint:disable=invalid-name
             print("Error:", e)
             sys.exit(2)

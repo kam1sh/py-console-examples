@@ -1,9 +1,8 @@
+#!/usr/bin/env python3
 import argparse
 import logging
-import sys
-import traceback
 
-from todolib import TodoApp, AppError, __version__ as lib_version
+from todolib import TodoApp, __version__ as lib_version
 
 
 def get_parser():
@@ -41,30 +40,23 @@ def main(raw_args=None):
         logging.getLogger("todolib").setLevel(logging.INFO)
     if args.version:
         print(lib_version)
-        sys.exit(0)
+        exit(0)
     cmd = args.cmd
     if not cmd:
         parser.print_help()
-        sys.exit(1)
+        exit(1)
     with TodoApp.fromenv() as app:
-        try:
-            if cmd == "add":
-                task = app.add_task(args.title)
-                print(task, "created with number", task.number, end=".\n")
-            elif cmd == "show":
-                app.print_tasks(args.show_done)
-            elif cmd == "done":
-                task = app.task_done(args.number)
-                print(task, "marked as done.")
-            elif cmd == "remove":
-                task = app.remove_task(args.number)
-                print(task, "removed from list.")
-        except AppError as e:  # pylint:disable=invalid-name
-            print("Error:", e)
-            sys.exit(2)
-        except:  # pylint:disable=bare-except
-            traceback.print_exc()
-            sys.exit(2)
+        if cmd == "add":
+            task = app.add_task(args.title)
+            print(task, "created with number", task.number, end=".\n")
+        elif cmd == "show":
+            app.print_tasks(args.show_done)
+        elif cmd == "done":
+            task = app.task_done(args.number)
+            print(task, "marked as done.")
+        elif cmd == "remove":
+            task = app.remove_task(args.number)
+            print(task, "removed from list.")
 
 
 if __name__ == "__main__":

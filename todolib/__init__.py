@@ -117,7 +117,7 @@ class Task:
 
     def create(self):
         """ Creates current task in the database. """
-        self.number = len(self.app.db["tasks"]) + 1
+        self.number = len(self.app.db["tasks"])
         self.app.db["tasks"].append(self.asdict())
 
     def asdict(self) -> dict:

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import atexit
 import logging
 
@@ -17,8 +18,8 @@ pass_app = click.make_pass_decorator(TodoApp)
 @click.pass_context
 def cli(ctx, verbose, db):
     """Todo notes - click version."""
-    logging.basicConfig()
     level = levels[min(verbose, 2)]
+    logging.basicConfig(level=level)
     logging.getLogger("todolib").setLevel(level)
     ctx.obj = TodoApp.fromenv(db)
     atexit.register(ctx.obj.save)
@@ -54,9 +55,9 @@ def done(app, number):
 @click.argument("number", type=int)
 @pass_app
 def remove(app, number):
-    """ Removes task from the list. """
+    """ Remove task from the list. """
     task = app.remove_task(number)
-    click.echo(f"{task} removed from list.")
+    click.echo(f"{task} removed from the list.")
 
 
 @cli.command()

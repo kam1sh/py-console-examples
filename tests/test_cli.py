@@ -4,6 +4,7 @@ import pytest
 import todo_argparse
 import todo_click
 import todo_docopt
+import todo_fire
 import todolib
 
 
@@ -25,7 +26,7 @@ def check(db):
     assert db["tasks"] and db["tasks"][0]["title"] == "test"
 
 
-EXPECTED = "Task 'test' created with number 1.\n"
+EXPECTED = "Task 'test' created with number 0.\n"
 
 
 def test_argparse(capsys):
@@ -45,3 +46,9 @@ def test_click():
     result = runner.invoke(todo_click.cli, ["add", "test"])
     assert result.exit_code == 0
     assert result.output == EXPECTED
+
+
+def test_fire(capsys):
+    todo_fire.main(["add", "test"])
+    out, _ = capsys.readouterr()
+    assert out == EXPECTED

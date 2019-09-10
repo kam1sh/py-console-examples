@@ -14,12 +14,10 @@ Options:
   -v --verbose  Enable verbose mode.
 """
 import logging
-import sys
-import traceback
 
 from docopt import docopt
 
-from todolib import TodoApp, AppError, __version__ as lib_version
+from todolib import TodoApp, __version__ as lib_version
 
 log = logging.getLogger("todolib")
 
@@ -33,21 +31,14 @@ def main(argv=None):
     log.debug("Arguments: %s", args)
 
     with TodoApp.fromenv() as app:
-        try:
-            if args["add"]:
-                task = app.add_task(args["<task>"])
-                print(task, "created with number", task.number, end=".\n")
-            elif args["show"]:
-                app.print_tasks(args["--show-done"])
-            elif args["done"]:
-                task = app.task_done(args["<number>"])
-                print(task, "marked as done.")
-            elif args["remove"]:
-                task = app.remove_task(args["<number>"])
-                print(task, "removed from list.")
-        except AppError as e:  # pylint:disable=invalid-name
-            print("Error:", e)
-            sys.exit(2)
-        except:  # pylint:disable=bare-except
-            traceback.print_exc()
-            sys.exit(2)
+        if args["add"]:
+            task = app.add_task(args["<task>"])
+            print(task, "created with number", task.number, end=".\n")
+        elif args["show"]:
+            app.print_tasks(args["--show-done"])
+        elif args["done"]:
+            task = app.task_done(args["<number>"])
+            print(task, "marked as done.")
+        elif args["remove"]:
+            task = app.remove_task(args["<number>"])
+            print(task, "removed from list.")

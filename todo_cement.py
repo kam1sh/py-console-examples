@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import signal
+
 from cement import App, CaughtSignal, Controller, ex
 
 import todolib
@@ -48,25 +50,23 @@ class Base(Controller):
         print(task, "removed from the list.")
 
 
-def extend_db(app):
-    app.todoobj = todolib.TodoApp.fromenv()
-
-
-def close_db(app):
-    app.todoobj.save()
-
-
 class TodoApp(App):
     def __init__(self, argv=None):
         super().__init__(argv=argv)
         self.todoobj = None
+
+    def load_db(self):
+        self.todoobj = todolib.TodoApp.fromenv()
+
+    def save(self):
+        self.todoobj.save()
 
     class Meta:
         # application label
         label = "todo_cement"
         # register handlers
         handlers = [Base]
-        hooks = [("post_setup", extend_db), ("pre_close", close_db)]
+        hooks = [("post_setup", lambda app: app.load_db()), ("pre_close", lambda app: app.save())]
         # call sys.exit() on close
         close_on_exit = True
 
@@ -76,8 +76,9 @@ def main():
         try:
             app.run()
         except CaughtSignal as e:
-            # Default Cement signals are SIGINT and SIGTERM, exit 0 (non-error)
-            print("\n%s" % e)
+            if e.signum not in (signal.SIGINT, signal.SIGTERM):
+                raise
+            app.log.debug(f"\n{e}")
             app.exit_code = 0
 
 

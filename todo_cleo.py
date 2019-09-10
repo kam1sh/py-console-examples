@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import atexit
 
 from cleo import Application as BaseApplication, Command as BaseCommand
 # cleo is a wrapper around clikit, and sometimes you have to access low-level library
@@ -10,9 +9,17 @@ import todolib
 
 # command with methods common for our application
 class Command(BaseCommand):
-    @property
-    def todoapp(self):
-        return self.application.todoapp
+    def __init__(self):
+        super().__init__()
+        self.todoapp = None
+
+    def handle(self):
+        with todolib.TodoApp.fromenv() as app:
+            self.todoapp = app
+            self.do_handle()
+
+    def do_handle(self):
+        raise NotImplementedError
 
 
 class AddCommand(Command):
@@ -22,7 +29,7 @@ class AddCommand(Command):
     add {task : Task to add}
     """
 
-    def handle(self):
+    def do_handle(self):
         title = self.argument("task")
         task = self.todoapp.add_task(title)
         # will be printed only on "-vvv"
@@ -37,7 +44,7 @@ class ShowCommand(Command):
     show {--show-done : Include tasks that are done.}
     """
 
-    def handle(self):
+    def do_handle(self):
         tasks = self.todoapp.list_tasks(self.option("show-done"))
         if not tasks:
             self.line("There is no TODOs.", style="info")
@@ -57,7 +64,7 @@ class DoneCommand(Command):
     done {number : Task number}
     """
 
-    def handle(self):
+    def do_handle(self):
         task = self.todoapp.task_done(int(self.argument("number")))
         self.line(f"Task <info>{task.title}</> marked as done.")
 
@@ -69,7 +76,7 @@ class RemoveCommand(Command):
     remove {number : Task number}
     """
 
-    def handle(self):
+    def do_handle(self):
         task = self.todoapp.remove_task(int(self.argument("number")))
         self.line(f"Task <info>{task.title}</> removed from the list.")
 
@@ -78,8 +85,6 @@ class TodoApp(BaseApplication):
     def __init__(self):
         super().__init__(name="ToDo app - cleo version", version=todolib.__version__)
         self.add_commands(AddCommand(), ShowCommand(), DoneCommand(), RemoveCommand())
-        self.todoapp = todolib.TodoApp.fromenv()
-        atexit.register(self.todoapp.save)
 
 
 def main(args=None):

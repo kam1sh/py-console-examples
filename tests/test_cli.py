@@ -56,14 +56,8 @@ def test_fire(capsys):
     out, _ = capsys.readouterr()
     assert out == EXPECTED
 
-
-class TestCementApp(todo_cement.TodoApp):
-    class Meta:
-        label = "todoapp"
-
-
 def test_cement(capsys):
-    with TestCementApp(argv=["add", "test"]) as app:
+    with todo_cement.TodoApp(argv=["add", "test"]) as app:
         app.run()
         out, _ = capsys.readouterr()
         assert out == EXPECTED

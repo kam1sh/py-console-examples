@@ -14,7 +14,7 @@ def get_parser():
     subparsers = parser.add_subparsers(title="Commands", dest="cmd")
 
     add = subparsers.add_parser("add", help="Add new task")
-    add.add_argument("title", help="Todo title")
+    add.add_argument("title", help="Task title")
 
     show = subparsers.add_parser("show", help="Show tasks")
     show.add_argument(

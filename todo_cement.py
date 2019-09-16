@@ -24,7 +24,6 @@ class Base(Controller):
 
     @ex(help="Add new task", arguments=[(["task"], {"help": "Task title"})])
     def add(self):
-        """Example sub-command."""
         title = self.app.pargs.task
         self.app.log.debug(f"Task title: {title!r}")
         task = self.app.todoobj.add_task(title)

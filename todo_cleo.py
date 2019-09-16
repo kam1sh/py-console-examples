@@ -83,7 +83,7 @@ class RemoveCommand(Command):
 
 class TodoApp(BaseApplication):
     def __init__(self):
-        super().__init__(name="ToDo app - cleo version", version=todolib.__version__)
+        super().__init__(name="todo_cleo", version=todolib.__version__)
         self.add_commands(AddCommand(), ShowCommand(), DoneCommand(), RemoveCommand())
 
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Todo notes - docopt version.
+"""Todo notes on docopt.
 
 Usage:
   todo_docopt [-v | -vv ] add <task>

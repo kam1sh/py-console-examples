@@ -6,6 +6,7 @@ import todo_argparse
 import todo_cement
 import todo_cleo
 import todo_click
+import todo_cliff
 import todo_docopt
 import todo_fire
 import todolib
@@ -56,6 +57,7 @@ def test_fire(capsys):
     out, _ = capsys.readouterr()
     assert out == EXPECTED
 
+
 def test_cement(capsys):
     with todo_cement.TodoApp(argv=["add", "test"]) as app:
         app.run()
@@ -72,3 +74,12 @@ def test_cleo():
     tester.execute("test")
     assert tester.status_code == 0
     assert tester.io.fetch_output() == "Task test created with number 0.\n"
+
+
+def test_cliff(capsys):
+    app = todo_cliff.App()
+    code = app.run(["add", "test"])
+    assert code == 0
+    out, _ = capsys.readouterr()
+    assert out == EXPECTED
+

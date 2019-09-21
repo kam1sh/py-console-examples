@@ -65,7 +65,10 @@ class TodoApp(App):
         label = "todo_cement"
         # register handlers
         handlers = [Base]
-        hooks = [("post_setup", lambda app: app.load_db()), ("pre_close", lambda app: app.save())]
+        hooks = [
+            ("post_setup", lambda app: app.load_db()),
+            ("pre_close", lambda app: app.save()),
+        ]
         # call sys.exit() on close
         close_on_exit = True
 

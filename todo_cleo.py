@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from cleo import Application as BaseApplication, Command as BaseCommand
+
 # cleo is a wrapper around clikit, and sometimes you have to access low-level library
 from clikit.api.io import flags as verbosity
 

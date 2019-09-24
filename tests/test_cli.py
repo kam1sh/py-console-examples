@@ -11,6 +11,7 @@ import todo_cliff
 import todo_docopt
 import todo_fire
 import todo_plac
+import todo_plumbum
 import todolib
 
 
@@ -85,7 +86,16 @@ def test_cliff(capsys):
     out, _ = capsys.readouterr()
     assert out == EXPECTED
 
+
 def test_plac(capsys):
     plac.Interpreter.call(todo_plac.TodoInterface, arglist=["add", "test"])
     out, _ = capsys.readouterr()
     assert out == EXPECTED
+
+
+def test_plumbum(capsys):
+    todo_plumbum.App.run(["todo_plumbum", "add", "test"], exit=False)
+    out, _ = capsys.readouterr()
+    assert out == "Task test added to the list.\n"
+
+

@@ -1,6 +1,7 @@
 import cleo
 import click.testing
 import pytest
+import plac
 
 import todo_argparse
 import todo_cement
@@ -9,6 +10,7 @@ import todo_click
 import todo_cliff
 import todo_docopt
 import todo_fire
+import todo_plac
 import todolib
 
 
@@ -83,3 +85,7 @@ def test_cliff(capsys):
     out, _ = capsys.readouterr()
     assert out == EXPECTED
 
+def test_plac(capsys):
+    plac.Interpreter.call(todo_plac.TodoInterface, arglist=["add", "test"])
+    out, _ = capsys.readouterr()
+    assert out == EXPECTED

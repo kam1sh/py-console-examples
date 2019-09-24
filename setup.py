@@ -11,6 +11,8 @@ setup(
         "cement>=3.0.4",
         "cleo>=0.7.5",
         "cliff>=2.16.0",
+        "plac>=1.1.0",
+        "plumbum>=1.6.7",
     ],
     tests_require=["pytest>=5.1.1"],
 )

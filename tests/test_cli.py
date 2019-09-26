@@ -37,8 +37,6 @@ def test_argparse(capsys):
     assert out == EXPECTED
 
 
-
-
 def test_cliff(capsys):
     app = todo_cliff.App()
     code = app.run(["add", "test"])

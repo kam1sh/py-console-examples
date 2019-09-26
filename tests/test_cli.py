@@ -1,3 +1,5 @@
+import atexit
+
 import cleo
 import click.testing
 import pytest
@@ -8,6 +10,7 @@ import todo_cement
 import todo_cleo
 import todo_click
 import todo_cliff
+import todo_cmd2
 import todo_docopt
 import todo_fire
 import todo_plac
@@ -18,10 +21,11 @@ import todolib
 @pytest.fixture(autouse=True)
 def db(monkeypatch):
     """
-    monkeypatch database load, so there would be empty database
-    before each test
+    monkeypatch database load/save, so there would be empty database
+    before each test and original db won't be changed
     """
     value = {"tasks": []}
+    monkeypatch.setattr(todolib.TodoApp, "save", lambda _: ...)
     monkeypatch.setattr(todolib.TodoApp, "get_db", lambda _: value)
     return value
 
@@ -94,8 +98,11 @@ def test_plac(capsys):
 
 
 def test_plumbum(capsys):
-    todo_plumbum.App.run(["todo_plumbum", "add", "test"], exit=False)
+    _, code = todo_plumbum.App.run(["todo_plumbum", "add", "test"], exit=False)
+    assert code == 0
     out, _ = capsys.readouterr()
-    assert out == "Task test added to the list.\n"
+    assert out == "Task test created with number 0.\n"
 
 
+def test_cmd2():
+    todo_cmd2.main(transcript_files=["tests/transcript.txt"])

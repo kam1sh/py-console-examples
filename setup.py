@@ -13,6 +13,7 @@ setup(
         "cliff>=2.16.0",
         "plac>=1.1.0",
         "plumbum>=1.6.7",
+        "cmd2>=0.8.9",
     ],
     tests_require=["pytest>=5.1.1"],
 )

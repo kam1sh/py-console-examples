@@ -1,0 +1,2 @@
+(Cmd) add test
+Task 'test' created with number 0.

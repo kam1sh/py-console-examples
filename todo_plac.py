@@ -2,6 +2,7 @@
 import plac
 import todolib
 
+
 class TodoInterface:
     commands = "add", "show", "done", "remove"
 
@@ -32,6 +33,7 @@ class TodoInterface:
         """ Remove task from the list. """
         task = self.app.remove_task(number=int(number))
         print(task, "removed from the list.")
+
 
 if __name__ == "__main__":
     plac.Interpreter.call(TodoInterface)

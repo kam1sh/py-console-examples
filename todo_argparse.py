@@ -5,27 +5,27 @@ import logging
 from todolib import TodoApp, __version__ as lib_version
 
 
-def get_parser():
-    parser = argparse.ArgumentParser("Todo notes - argparse version")
+def get_parser(progname="todo_argparse"):
+    parser = argparse.ArgumentParser(progname)
     parser.add_argument(
         "--verbose", "-v", action="store_true", help="Enable verbose mode"
     )
     parser.add_argument("--version", "-V", action="store_true", help="Show version")
     subparsers = parser.add_subparsers(title="Commands", dest="cmd")
 
-    add = subparsers.add_parser("add", help="Add new task")
-    add.add_argument("title", help="Task title")
+    parser.add = subparsers.add_parser("add", help="Add new task")
+    parser.add.add_argument("title", help="Task title")
 
-    show = subparsers.add_parser("show", help="Show tasks")
-    show.add_argument(
+    parser.show = subparsers.add_parser("show", help="Show tasks")
+    parser.show.add_argument(
         "--show-done", action="store_true", help="Include done tasks in the output"
     )
 
-    done = subparsers.add_parser("done", help="Mark task as done")
-    done.add_argument("number", type=int, help="Task number")
+    parser.done = subparsers.add_parser("done", help="Mark task as done")
+    parser.done.add_argument("number", type=int, help="Task number")
 
-    remove = subparsers.add_parser("remove", help="Remove task")
-    remove.add_argument("number", type=int, help="Task number")
+    parser.remove = subparsers.add_parser("remove", help="Remove task")
+    parser.remove.add_argument("number", type=int, help="Task number")
 
     return parser
 

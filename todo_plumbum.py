@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 import atexit
-import logging
 
 from plumbum import cli, colors
 import todolib
-
-levels = [logging.WARNING, logging.INFO, logging.DEBUG]
 
 
 class App(cli.Application):
@@ -21,9 +18,6 @@ class App(cli.Application):
         if not self.nested_command:  # will be ``None`` if no sub-command follows
             print(colors.red | "No command given.")
             return 1
-        level = levels[min(self.verbosity, 2)]
-        logging.basicConfig(level=level)
-        todolib.log.setLevel(level)
 
 
 class Command(cli.Application):

@@ -29,7 +29,7 @@ class TodoInterface:
         task = self.app.task_done(number=int(number))
         print(task, "marked as done.")
 
-    def remove(self, number):
+    def remove(self, number: "Task number"):
         """ Remove task from the list. """
         task = self.app.remove_task(number=int(number))
         print(task, "removed from the list.")

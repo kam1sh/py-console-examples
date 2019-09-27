@@ -27,8 +27,8 @@ class Add(Command):
     def extend_parser(self, parser):
         parser.add_argument("title", help="Task title")
 
-    def take_action(self, parsed_args):
-        task = self.app.todoapp.add_task(parsed_args.title)
+    def take_action(self, args):
+        task = self.app.todoapp.add_task(args.title)
         print(task, "created with number", task.number, end=".\n")
 
 
@@ -40,8 +40,8 @@ class Show(Lister, Command):
             "--show-done", action="store_true", help="Include done tasks"
         )
 
-    def take_action(self, parsed_args):
-        tasks = self.app.todoapp.list_tasks(show_done=parsed_args.show_done)
+    def take_action(self, args):
+        tasks = self.app.todoapp.list_tasks(show_done=args.show_done)
         # no 'there is no todos' message in order to support csv/etc
         # empty result formatting properly
         return (
@@ -56,21 +56,24 @@ class Done(Command):
     def extend_parser(self, parser):
         parser.add_argument("number", type=int, help="Task number")
 
-    def take_action(self, parsed_args):
-        task = self.app.todoapp.task_done(number=parsed_args.number)
+    def take_action(self, args):
+        task = self.app.todoapp.task_done(number=args.number)
         print(task, "marked as done.")
 
 
+# inherited from Done for argparser reuse
 class Remove(Done):
     """Remove task from the list."""
 
-    def take_action(self, parsed_args):
-        task = self.app.todoapp.remove_task(number=parsed_args.number)
+    def take_action(self, args):
+        task = self.app.todoapp.remove_task(number=args.number)
         print(task, "removed from the list.")
 
 
 class App(app.App):
     def __init__(self):
+        # besides that, CommandManager can extract commands list
+        # from setuptools entrypoints
         manager = CommandManager("todo_cliff")
         manager.add_command("add", Add)
         manager.add_command("show", Show)
@@ -87,13 +90,14 @@ class App(app.App):
     def initialize_app(self, argv):
         self.todoapp = TodoApp.fromenv()
 
+
     def clean_up(self, cmd, result, err):
         self.todoapp.save()
 
 
-def main(args=sys.argv[1:]) -> int:
+def main(argv=None) -> int:
     app = App()
-    return app.run(argv=args)
+    return app.run(argv=argv or sys.argv[1:])
 
 
 if __name__ == "__main__":

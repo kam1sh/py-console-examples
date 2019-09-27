@@ -15,6 +15,8 @@ class App(urwid.WidgetPlaceholder):
         self.todoapp = todolib.TodoApp.fromenv()
         self.new_menu(
             "Todo notes on urwid",
+            # button has a label and handle, that should accept
+            # one argument (button object itself)
             Button("New task", on_press=add),
             Button("List tasks", on_press=list_tasks),
         )
@@ -28,7 +30,10 @@ class App(urwid.WidgetPlaceholder):
 
     def new_box(self, widget):
         self.box_level += 1
+        # overlay allows to draw one widget on top of the other,
+        # in this case - new LineBox on top of the previous current widget
         self.original_widget = urwid.Overlay(
+            # LineBox draws a line around passed widget
             urwid.LineBox(widget),
             self.original_widget,
             align="center",
@@ -80,26 +85,23 @@ def list_tasks(button):
     for task in tasks:
         status = "done" if task.done else "not done"
         text = f"{task.title} [{status}]"
-        button = Button(text, on_press=task_actions)
-        button.task_id = task.number
+        # button can also pass additional data into callbacks
+        button = Button(text, on_press=task_actions, user_data=task.number)
         buttons.append(button)
-    menu = app.new_menu("Task list", *buttons)
-    return menu
+    app.new_menu("Task list", *buttons)
 
 
-def task_actions(button):
-    def done(button):
-        app.todoapp.task_done(button.task_id)
+def task_actions(button, number):
+    def done(button, number):
+        app.todoapp.task_done(number)
         app.popup("Task marked as done.")
 
-    def remove(button):
-        app.todoapp.remove_task(button.task_id)
+    def remove(button, number):
+        app.todoapp.remove_task(number)
         app.popup("Task removed from the list.")
 
-    task_id = button.task_id
-    btn_done = Button("Mark as done", on_press=done)
-    btn_remove = Button("Remove from the list", on_press=remove)
-    btn_done.task_id, btn_remove.task_id = [task_id] * 2
+    btn_done = Button("Mark as done", on_press=done, user_data=number)
+    btn_remove = Button("Remove from the list", on_press=remove, user_data=number)
     app.new_menu("Actions", btn_done, btn_remove)
 
 

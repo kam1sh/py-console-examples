@@ -3,12 +3,12 @@ This repository contains examples of usage of most popular Python CLI frameworks
 such as:
 
 * [argparse](https://docs.python.org/3/library/argparse.html)
-* [docopt](https://github.com/docopt/docopt)
-* [click](https://github.com/pallets/click)
-* [fire](https://github.com/google/python-fire)
-* [cement](https://github.com/datafolklabs/cement)
-* [cleo](https://github.com/sdispater/cleo)
-* And more (later)!
+* [cliff](https://github.com/openstack/cliff)
+* [plac](https://github.com/micheles/plac)
+* [plumbum](https://github.com/tomerfiliba/plumbum)
+* [cmd2](https://github.com/python-cmd2/cmd2/)
+* [urwid](https://github.com/urwid/urwid)
+
 
 ## Installation
 Python 3.7 required.
@@ -21,6 +21,6 @@ python3.7 -m venv .venv
 ```bash
 source .venv/bin/activate
 python todo_argparse.py add test
-python todo_click.py show
+python todo_plac.py show
 # etc
 ```
